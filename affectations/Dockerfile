@@ -16,7 +16,7 @@ RUN mvn clean package -DskipTests
 # ============================================
 # Étape 2 : Image légère pour l'exécution
 # ============================================
-FROM eclipse-temurin:17-jre-slim
+FROM eclipse-temurin:17-jre-jammy
 
 WORKDIR /app
 
