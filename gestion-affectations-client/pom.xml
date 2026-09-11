@@ -7,7 +7,7 @@
 
     <groupId>com.gestion.client</groupId>
     <artifactId>gestion-affectations-client</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -40,7 +40,7 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- ✅ OKHTTP - VERSION 4.12.0 -->
+        <!-- OKHTTP - VERSION 4.12.0 -->
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
             <artifactId>okhttp</artifactId>
@@ -102,18 +102,42 @@
                 <version>3.1.2</version>
             </plugin>
 
-            <!-- Jar Plugin -->
+            <!-- ⭐ SHADE PLUGIN : Remplace assembly-plugin, gère mieux les polices Ikonli -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>3.3.0</version>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <mainClass>com.gestion.client.MainApp</mainClass>
-                        </manifest>
-                    </archive>
-                </configuration>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.5.1</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
+                            <transformers>
+                                <!-- ⭐ FUSIONNE les fichiers META-INF/services (nécessaire pour Ikonli) -->
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                                <!-- Définit la classe main dans le manifeste -->
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>com.gestion.client.MainFrame</mainClass>
+                                </transformer>
+                            </transformers>
+                            <filters>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <!-- Exclut les signatures qui peuvent causer des erreurs -->
+                                        <exclude>META-INF/*.SF</exclude>
+                                        <exclude>META-INF/*.DSA</exclude>
+                                        <exclude>META-INF/*.RSA</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+                            <finalName>gestion-affectations-client</finalName>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
